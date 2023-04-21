@@ -163,3 +163,7 @@ cython_debug/
 
 .pre-commit-config.yaml
 .empty
+
+# VS CODE
+.vscode
+launch.json
