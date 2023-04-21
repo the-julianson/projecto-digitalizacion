@@ -1,0 +1,35 @@
+# docker-compose.yml
+
+version: '3.7'
+
+services:
+
+  server:
+    build:
+      context: .
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: server
+    depends_on:
+      - database
+    environment:
+      - PGDATABASE=nebula-docs # new
+      - PGUSER=user # new
+      - PGPASSWORD=password # new
+      - PGHOST=server-database # new
+    ports:
+      - 8003:8000
+
+  database:
+    container_name: taxi-database
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    expose:
+      - 5432
+    volumes:
+      - server-database:/var/lib/postgresql/data
+
+# new
+volumes:
+  server-database:
