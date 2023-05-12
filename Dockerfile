@@ -12,13 +12,23 @@ ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 dependencies
 RUN apt-get update \
-  && apt-get -y install gcc postgresql \
+  && apt-get -y install gcc postgresql netcat \
   && apt-get clean
 
 # install dependencies
+RUN pip install hupper
 RUN pip install --upgrade pip
 COPY ./requirements/ ./requirements/
+
+RUN pip install hupper
 RUN pip install -r requirements/local.txt
+
+# copy entrypoint.sh
+COPY ./entrypoint.sh /usr/src/app/
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # copy project
 COPY . .
+
+# run entrypoint
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

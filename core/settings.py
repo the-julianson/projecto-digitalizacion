@@ -30,7 +30,7 @@ load_dotenv()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY", default=get_random_secret_key())
 DEBUG = int(os.environ.get("DEBUG", default=0))
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="127.0.0.1 localhost [::1]").split(" ")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="127.0.0.1 localhost 0.0.0.0 [::1]").split(" ")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -50,12 +50,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "users",
+    "document_manager",
     "rest_framework",
     "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -95,7 +98,7 @@ DATABASES = {
         "USER": os.environ.get("PGSQL_USER", "user"),
         "PASSWORD": os.environ.get("PGSQL_PASSWORD", "p3rs0n4l"),
         "HOST": os.environ.get("PGSQL_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("PGSQL_PORT", 5433),
+        "PORT": os.environ.get("PGSQL_PORT", 5432),
     }
 }
 
@@ -134,7 +137,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
+
+STATIC_ROOT = BASE_DIR / "static_root"
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STORAGES_DIR = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -154,3 +164,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
     "USER_ID_CLAIM": "id",
 }
+
+# Etiquetas creacion
+MAXIMO_ETIQUETAS = os.environ.get("MAXIMO_ETIQUETAS", 100)

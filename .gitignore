@@ -167,3 +167,5 @@ cython_debug/
 # VS CODE
 .vscode
 launch.json
+
+media/images/
