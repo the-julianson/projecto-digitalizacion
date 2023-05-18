@@ -17,6 +17,18 @@ class EtiquetaViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="create-bulk")
     def create_bulk(self, request, *args, **kwargs):
+        """
+        Create multiple `Etiqueta` instances in bulk.
+
+        This endpoint expects the following POST data:
+            - `area_id` (int): The ID of the `InternalArea` to associate with the new `Etiqueta` instances.
+            - `number_of_etiquetas` (int): The number of `Etiqueta` instances to create.
+
+        The authenticated user is automatically associated with the new `Etiqueta` instances.
+
+        Returns:
+            A list of the created `Etiqueta` instances.
+        """
         area_id = request.data.get("area_id")
         num_etiquetas = request.data.get("number_of_etiquetas")
         user = request.user

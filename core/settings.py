@@ -48,11 +48,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.postgres",
     "django.contrib.staticfiles",
+    "corsheaders",
     "django_extensions",
     "users",
     "document_manager",
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -156,7 +158,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-    )
+    ),
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -165,5 +171,16 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "id",
 }
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Nebula Docs",
+    "DESCRIPTION": "Gestor de Documentos para digitalización.",
+    "VERSION": "1.0.0",
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+}
+
 # Etiquetas creacion
 MAXIMO_ETIQUETAS = os.environ.get("MAXIMO_ETIQUETAS", 100)
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3001",
+]
