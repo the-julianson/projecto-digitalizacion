@@ -179,7 +179,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Etiquetas creacion
-MAXIMO_ETIQUETAS = os.environ.get("MAXIMO_ETIQUETAS", 100)
+LABELS_MAX = os.environ.get("LABELS_MAX", 100)
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3001",

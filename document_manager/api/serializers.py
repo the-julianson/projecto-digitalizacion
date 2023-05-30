@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from document_manager.models import Etiqueta
+from document_manager.models import Label
 
 
-class EtiquetaSerializer(serializers.ModelSerializer):
+class LabelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Etiqueta
+        model = Label
         fields = "__all__"

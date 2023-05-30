@@ -1,10 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from document_manager.api.viewsets import EtiquetaViewSet
+from document_manager.api.viewsets import LabelViewSet
 
 router = DefaultRouter()
-router.register(r"etiquetas", EtiquetaViewSet, basename="etiqueta")
+router.register(r"labels", LabelViewSet, basename="label")
 
 
 urlpatterns = [
