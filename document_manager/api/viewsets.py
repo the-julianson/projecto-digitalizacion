@@ -4,25 +4,25 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.settings import MAXIMO_ETIQUETAS
-from document_manager.api.serializers import EtiquetaSerializer
-from document_manager.constants import INVALID_AREA_ID_MSG, NON_POSITIVE_ETIQUETAS_MSG
-from document_manager.models import Etiqueta, InternalArea
+from core.settings import LABELS_MAX
+from document_manager.api.serializers import LabelSerializer
+from document_manager.vars import INVALID_AREA_ID_MSG, NON_POSITIVE_LABELS_MSG
+from document_manager.models import Label, InternalArea
 
 
-class EtiquetaViewSet(viewsets.ModelViewSet):
-    queryset = Etiqueta.objects.all()
-    serializer_class = EtiquetaSerializer
+class LabelViewSet(viewsets.ModelViewSet):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
     permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["post"], url_path="create-bulk")
     def create_bulk(self, request, *args, **kwargs):
         """
-        Create multiple `Etiqueta` instances in bulk.
+        Create multiple `Label` instances in bulk.
 
         This endpoint expects the following POST data:
             - `area_id` (int): The ID of the `InternalArea` to associate with the new `Etiqueta` instances.
-            - `number_of_etiquetas` (int): The number of `Etiqueta` instances to create.
+            - `labels_quantity` (int): The number of `Etiqueta` instances to create.
 
         The authenticated user is automatically associated with the new `Etiqueta` instances.
 
@@ -30,17 +30,17 @@ class EtiquetaViewSet(viewsets.ModelViewSet):
             A list of the created `Etiqueta` instances.
         """
         area_id = request.data.get("area_id")
-        num_etiquetas = request.data.get("number_of_etiquetas")
+        quantity= request.data.get("labels_quantity")
         user = request.user
 
         validate_request_data(request.data)
-        etiquetas = []
-        for _ in range(num_etiquetas):
-            etiqueta = Etiqueta(area_id=area_id, user=user)
-            etiqueta.save()
-            etiquetas.append(etiqueta)
+        labels = []
+        for _ in range(quantity):
+            label = Label(area_id=area_id, user=user)
+            label.save()
+            labels.append(label)
 
-        serializer = self.get_serializer(etiquetas, many=True)
+        serializer = self.get_serializer(labels, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -54,9 +54,9 @@ def validate_request_data(data):
                 detail=f"{INVALID_AREA_ID_MSG} {data['area_id']}",
             )
 
-    if "number_of_etiquetas" in data:
-        if not 0 < data["number_of_etiquetas"] <= MAXIMO_ETIQUETAS:
+    if "labels_quantity" in data:
+        if not 0 < int(data["labels_quantity"]) <= LABELS_MAX:
             raise ValidationError(
-                detail=f"{NON_POSITIVE_ETIQUETAS_MSG} {MAXIMO_ETIQUETAS}.",
+                detail=f"{NON_POSITIVE_LABELS_MSG} {LABELS_MAX}.",
             )
     return data
