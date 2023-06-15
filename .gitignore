@@ -160,7 +160,6 @@ cython_debug/
 .idea/
 
 # Pre commit config files
-
 .pre-commit-config.yaml
 .empty
 
@@ -169,3 +168,6 @@ cython_debug/
 launch.json
 
 media/images/
+
+
+test_merge_images_logic.png

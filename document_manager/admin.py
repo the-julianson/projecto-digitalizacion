@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from document_manager.models import Label, InternalArea
+from document_manager.models import InternalArea, Label
 
 
 class LabelAdmin(admin.ModelAdmin):
