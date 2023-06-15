@@ -187,8 +187,8 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
 }
 
-# Etiquetas creacion
-MAXIMO_ETIQUETAS = os.environ.get("MAXIMO_ETIQUETAS", 100)
+# Labels creacion
+LABELS_MAX = os.environ.get("LABELS_MAX", 100)
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",

@@ -7,7 +7,7 @@ from django.core.management import call_command
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from document_manager.models import Etiqueta, InternalArea
+from document_manager.models import InternalArea, Label
 
 
 @pytest.fixture
@@ -50,22 +50,22 @@ def load_internal_areas():
 
 
 @pytest.fixture()
-def etiqueta_factory() -> Callable[[int, AbstractUser], Etiqueta]:
+def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
     """
-    Factory fixture for creating Etiqueta instances.
+    Factory fixture for creating Label instances.
 
     The fixture returns a function that takes an area_id and a user
-    and returns an Etiqueta instance with those attributes.
+    and returns an Label instance with those attributes.
 
     Args:
         area_id (int): The ID of the area associated with the etiqueta.
         user (User): The user associated with the etiqueta.
 
     Returns:
-        A function that takes an area_id and a user and returns an Etiqueta instance.
+        A function that takes an area_id and a user and returns an Label instance.
     """
 
-    def _etiqueta_factory(area: [int, InternalArea], user: AbstractUser) -> Etiqueta:
-        return Etiqueta.objects.create(area=area, user=user)
+    def _etiqueta_factory(area: [int, InternalArea], user: AbstractUser) -> Label:
+        return Label.objects.create(area=area, user=user)
 
     return _etiqueta_factory

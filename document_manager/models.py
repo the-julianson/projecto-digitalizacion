@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from io import BytesIO
 
 import barcode
@@ -9,39 +10,39 @@ from django.db import models
 from django.utils import timezone
 
 
-class Estado(models.Model):
-    nombre_estado = models.CharField(max_length=255, unique=True)
+class Status(models.Model):
+    status_name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.nombre_estado
+        return self.status_name
 
 
-class TipoDeDocumento(models.Model):
-    tipo = models.CharField(max_length=255, unique=True)
+class DocumentType(models.Model):
+    type = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.tipo
+        return self.type
 
 
 class Confidentiality(models.Model):
-    nivel = models.CharField(max_length=255, unique=True)
+    level = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.nivel
 
 
-class Edificio(models.Model):
-    nombre = models.CharField(max_length=255, unique=True)
+class Building(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
 
-class Nivel(models.Model):
-    nombre = models.CharField(max_length=255, unique=True)
+class Level(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
 
 class InternalArea(models.Model):
@@ -51,19 +52,19 @@ class InternalArea(models.Model):
         return self.name
 
 
-class Etiqueta(models.Model):
-    codigo = models.CharField(max_length=255, unique=True)
+class Label(models.Model):
+    code = models.CharField(max_length=255, unique=True)
     number = models.IntegerField()
-    code = models.ImageField(upload_to="images/")
+    bar_code_image = models.ImageField(upload_to="images/")
     area = models.ForeignKey(InternalArea, null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateField(auto_now_add=True)
     modified_at = models.DateField(auto_now=True)
 
     def __str__(self):
-        return self.codigo
+        return self.code
 
-    def generate_code(self):
+    def generate_bar_code(self):
         now = timezone.now()
         month = now.strftime("%m")
         year = now.strftime("%Y")
@@ -73,58 +74,60 @@ class Etiqueta(models.Model):
 
         self.number = random.randint(10000, 99999)
 
-        self.codigo = month + year + str(self.number) + area_id + user_id
+        self.code = month + year + str(self.number) + area_id + user_id
 
         #: generate image and save it to self.barcode
         code_128_class = barcode.get_barcode_class("Code128")
-        code_128 = code_128_class(self.codigo, writer=ImageWriter())
+        code_128 = code_128_class(self.code, writer=ImageWriter())
         buffer = BytesIO()
         code_128.write(buffer)
 
-        file_name = f"{self.codigo}.png"
+        file_name = f"{self.code}.png"
         file_content = ContentFile(buffer.getvalue())
-        self.code.save(file_name, file_content, save=False)
+        self.bar_code_image.save(file_name, file_content, save=False)
 
     def save(self, *args, **kwargs):
-        self.generate_code()
+        self.generate_bar_code()
         super().save(*args, **kwargs)
 
 
-class Documento(models.Model):
-    id_interno = models.CharField(max_length=255, null=True, blank=True)
-    id_expediente = models.CharField(max_length=255, null=True, blank=True)
-    etiqueta = models.OneToOneField(Etiqueta, on_delete=models.CASCADE)
+class Document(models.Model):
+    internal_id = models.CharField(max_length=255, null=True, blank=True)
+    file_id = models.CharField(max_length=255, null=True, blank=True, help_text="ID de expediente")
+    label = models.OneToOneField(Label, on_delete=models.CASCADE)
     blockchain_token = models.CharField(max_length=255, null=True, blank=True)
-    descripcion_documento = models.CharField(max_length=1000)
-    descripcion_expediente = models.CharField(max_length=1000, null=True, blank=True)
-    tipo_documento = models.ForeignKey(TipoDeDocumento, on_delete=models.CASCADE)
-    confidencialidad = models.ForeignKey(Confidentiality, on_delete=models.CASCADE)
-    estado = models.ForeignKey(Estado, on_delete=models.CASCADE)
+    document_description = models.CharField(max_length=1000)
+    file_description = models.CharField(max_length=1000, null=True, blank=True)
+    document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
+    confidentiality = models.ForeignKey(Confidentiality, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     modified_at = models.DateTimeField()
-    esta_activo = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.descripcion_documento
+        return f"{self.file_id}: {self.document_description}"
 
 
-class Foja(models.Model):
-    id_lote = models.IntegerField()
-    id_interno = models.IntegerField()
-    imagen = models.TextField()
+class Sheet(models.Model):
+    """Represents 'Fojas'."""
+
+    batch_id = models.IntegerField(help_text="ID de Lote")
+    intern_id = models.IntegerField(help_text="ID propio si lo tiene")
+    image = models.TextField()
     data = models.JSONField()
-    documento = models.ForeignKey(Documento, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.id_interno} - {self.documento}"
+        return f"{self.id} - {self.document}"
 
 
 class DocumentLocation(models.Model):
-    edificio = models.ForeignKey(Edificio, on_delete=models.CASCADE)
-    nivel = models.ForeignKey(Nivel, on_delete=models.CASCADE)
-    fecha_inicio = models.DateField()
-    fecha_salida = models.DateField()
-    id_caja = models.IntegerField()
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+    init_date = models.DateField(default=datetime.now, help_text="Fecha en la que ingresa el documento")
+    out_date = models.DateField(null=True, help_text="Fecha en la que se retira el documento")
+    box_id = models.IntegerField(null=True, help_text="ID caja que contiene el documento")
 
     def __str__(self):
-        return f"{self.edificio} - {self.nivel}"
+        return f"{self.building} - {self.level}"
