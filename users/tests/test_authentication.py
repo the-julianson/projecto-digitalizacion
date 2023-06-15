@@ -17,12 +17,14 @@ PASSWORD = "pAsswOrd"
         ("b@b.com", "", "", "password", "password"),
     ],
 )
-def test_user_can_sign_up(api_client, email, first_name, last_name, password_1, password_2):
+def test_user_can_sign_up(group_factory, api_client, email, first_name, last_name, password_1, password_2):
     url = reverse("sign_up")
+    group_operator = group_factory(name="operator")
     data = {
         "email": email,
         "password_1": password_1,
         "password_2": password_2,
+        "group": [group_operator.name],
     }
     if first_name:
         data["first_name"] = first_name
@@ -35,6 +37,7 @@ def test_user_can_sign_up(api_client, email, first_name, last_name, password_1, 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.data["id"] == user.id
     assert response.data["email"] == user.email
+    assert group_operator.name in user.groups.values_list("name", flat=True)
 
 
 @pytest.mark.django_db
@@ -122,5 +125,4 @@ def test_wrong_refresh_token(api_client):
     refresh_url = reverse("token_refresh")
     data_refresh = {"refresh": refresh_token}
     response_refresh = api_client.post(refresh_url, data=data_refresh, format="json")
-
     assert response_refresh.status_code == status.HTTP_401_UNAUTHORIZED

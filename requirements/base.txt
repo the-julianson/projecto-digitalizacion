@@ -23,6 +23,7 @@ pip-tools==6.13.0
 platformdirs==3.2.0
 pre-commit==3.2.2
 psycopg2-binary==2.9.6
+pypdf==3.9.1
 pycodestyle==2.10.0
 pyflakes==3.0.1
 pyproject_hooks==1.0.0

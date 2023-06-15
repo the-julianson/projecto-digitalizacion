@@ -8,7 +8,6 @@ services:
     build:
       context: .
     command: hupper -m manage runserver 0.0.0.0:8000
-    container_name: server
     depends_on:
       - database
     volumes:
@@ -25,8 +24,8 @@ services:
       - POSTGRES_DB=nebula_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
 
 # new
 volumes:

@@ -135,6 +135,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+if DEBUG:
+    USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -155,19 +157,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 REST_FRAMEWORK = {
+    # "DEFAULT_PERMISSION_CLASSES": [
+    #     "rest_framework.permissions.IsAuthenticated",
+    # ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
+        'rest_framework.renderers.JSONRenderer',
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+if DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append("rest_framework.renderers.BrowsableAPIRenderer")
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=72),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours=72),
     "USER_ID_CLAIM": "id",
 }
 
@@ -182,5 +191,7 @@ SPECTACULAR_SETTINGS = {
 MAXIMO_ETIQUETAS = os.environ.get("MAXIMO_ETIQUETAS", 100)
 
 CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:3003",
 ]
