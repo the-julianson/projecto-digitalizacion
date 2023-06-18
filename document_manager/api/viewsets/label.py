@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from core.settings import LABELS_MAX
-from document_manager.api.serializers import LabelSerializer
+from document_manager.api.serializers.label import LabelSerializer
 from document_manager.constants import INVALID_AREA_ID_MSG, NON_POSITIVE_LABELS_MSG
 from document_manager.models import InternalArea, Label
 from document_manager.utilities import get_image_response, merge_images

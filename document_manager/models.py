@@ -28,7 +28,7 @@ class Confidentiality(models.Model):
     level = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.nivel
+        return self.level
 
 
 class Building(models.Model):
@@ -101,8 +101,8 @@ class Document(models.Model):
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
     confidentiality = models.ForeignKey(Confidentiality, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
-    created_at = models.DateTimeField()
-    modified_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

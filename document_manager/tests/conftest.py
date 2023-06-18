@@ -7,7 +7,13 @@ from django.core.management import call_command
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from document_manager.models import InternalArea, Label
+from document_manager.models import (
+    Confidentiality,
+    DocumentType,
+    InternalArea,
+    Label,
+    Status,
+)
 
 
 @pytest.fixture
@@ -30,7 +36,7 @@ def token_factory() -> Callable[[AbstractUser], str]:
     return _token_factory
 
 
-@pytest.fixture
+@pytest.fixtureimmediate
 def token_str(user):
     refresh = RefreshToken.for_user(user)
     return str(refresh.access_token)
@@ -69,3 +75,27 @@ def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
         return Label.objects.create(area=area, user=user)
 
     return _etiqueta_factory
+
+
+@pytest.fixture()
+def confidentiality_factory():
+    def _confidentiality_factory() -> Confidentiality:
+        return Confidentiality.objects.create(level="Test")
+
+    return _confidentiality_factory
+
+
+@pytest.fixture()
+def status_factory():
+    def _status_factory() -> Status:
+        return Status.objects.create(status_name="Test")
+
+    return _status_factory
+
+
+@pytest.fixture()
+def document_type_factory():
+    def _document_type_factory() -> DocumentType:
+        return DocumentType.objects.create(type="Test")
+
+    return _document_type_factory
