@@ -2,6 +2,7 @@ from io import BytesIO
 
 from django.db.models.fields.files import ImageFieldFile
 from PIL import Image
+from pypdf import PdfMerger
 
 
 def merge_images(etiqueta_ids_str_paths: list[str | ImageFieldFile]) -> Image:
@@ -54,3 +55,13 @@ def get_image_response(image: Image) -> BytesIO:
     image.save(byte_arr, format="PNG")
     byte_arr.seek(0)
     return byte_arr
+
+
+def merge_pdfs(data):
+    """
+    Merge multiple PDF files into a single PDF file.
+    """
+    pdf_merger = PdfMerger()
+    for etiqueta in data:
+        pdf_merger.append(etiqueta.code)
+    return pdf_merger

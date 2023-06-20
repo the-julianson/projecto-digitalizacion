@@ -7,7 +7,13 @@ from django.core.management import call_command
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from document_manager.models import InternalArea, Label
+from document_manager.models import (
+    Confidentiality,
+    DocumentType,
+    InternalArea,
+    Label,
+    Status,
+)
 
 
 @pytest.fixture
@@ -21,7 +27,7 @@ def user(db):
     return user
 
 
-@pytest.fixture()
+@pytest.fixture
 def token_factory() -> Callable[[AbstractUser], str]:
     def _token_factory(user: AbstractUser) -> str:
         refresh = RefreshToken.for_user(user)
@@ -42,11 +48,26 @@ def authenticated_api_client(api_client, token_str):
     return api_client
 
 
-@pytest.fixture()
+@pytest.fixture
 def load_internal_areas():
     call_command("loaddata", "internal_areas.json")
     areas_ids = InternalArea.objects.all().values_list("id", flat=True)
     return areas_ids
+
+
+@pytest.fixture
+def load_confidentiality():
+    call_command("loaddata", "confidentiality.json")
+
+
+@pytest.fixture
+def load_document_type():
+    call_command("loaddata", "document_type.json")
+
+
+@pytest.fixture
+def load_status():
+    call_command("loaddata", "status.json")
 
 
 @pytest.fixture()
@@ -69,3 +90,25 @@ def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
         return Label.objects.create(area=area, user=user)
 
     return _etiqueta_factory
+
+
+@pytest.fixture
+def status_factory():
+    def _status_factory() -> Status:
+        return Status.objects.create(status_name="Test")
+
+    return _status_factory
+
+
+@pytest.fixture
+def kwargs_for_document_factory(user, load_internal_areas, load_document_type, load_confidentiality, load_status):
+    confidentiality = Confidentiality.objects.first()
+    document_type = DocumentType.objects.first()
+    document_status = Status.objects.first()
+
+    _kwargs = {
+        "document_type": document_type,
+        "confidentiality": confidentiality,
+        "status": document_status,
+    }
+    return _kwargs

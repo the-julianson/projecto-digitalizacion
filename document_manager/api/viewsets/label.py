@@ -1,27 +1,15 @@
 from django.http import FileResponse
 from django.urls import reverse
-from pypdf import PdfMerger
-from rest_framework import mixins, serializers, status, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.settings import LABELS_MAX
-from document_manager.api.serializers import LabelSerializer
-from document_manager.constants import INVALID_AREA_ID_MSG, NON_POSITIVE_LABELS_MSG
+from document_manager.api.serializers.label import LabelSerializer
+from document_manager.api.validators import validate_request_data
+from document_manager.api.viewsets.custom_mixins import ListViewSet
 from document_manager.models import InternalArea, Label
 from document_manager.utilities import get_image_response, merge_images
-
-
-def merge_pdfs(data):
-    """
-    Merge multiple PDF files into a single PDF file.
-    """
-    pdf_merger = PdfMerger()
-    for etiqueta in data:
-        pdf_merger.append(etiqueta.code)
-    return pdf_merger
 
 
 class LabelViewSet(viewsets.ModelViewSet):
@@ -97,51 +85,12 @@ class LabelViewSet(viewsets.ModelViewSet):
         return response
 
 
-def validate_request_data(data):
-    """
-    Check that the area_id is valid and the number_of_etiquetas is positive.
-    """
-    if "area_id" in data:
-        if not InternalArea.objects.filter(id=data["area_id"]).exists():
-            raise ValidationError(
-                detail=f"{INVALID_AREA_ID_MSG} {data['area_id']}",
-            )
-
-    if "labels_quantity" in data:
-        if not 0 < int(data["labels_quantity"]) <= LABELS_MAX:
-            raise ValidationError(
-                detail=f"{NON_POSITIVE_LABELS_MSG} {LABELS_MAX}.",
-            )
-    return data
-
-
-class ListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """
-    A viewset that provides `list` actions.
-
-    To use it, override the class and set the `.queryset` and
-    `.serializer_class` attributes.
-    """
-
-
 class InternalAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = InternalArea
-        fields = "__all__"
+        fields = ["id", "name"]
 
 
 class InternalAreaViewset(ListViewSet):
     queryset = InternalArea.objects.all()
     serializer_class = InternalAreaSerializer
-
-
-# class DocumentViewSet(ListViewSet):
-#     queryset = Documento.objects.all()
-#     serializer_class = DocumentoSerializer
-#
-#
-# class DocumentoSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Documento
-#         fields = "__all__"
