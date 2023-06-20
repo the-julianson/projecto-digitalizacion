@@ -1,43 +1,17 @@
-from rest_framework import generics, viewsets
+from django_filters import rest_framework as filters
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
-from document_manager.models import Confidentiality, Document, DocumentType, Status
-
-from ..serializers.document import (
-    ConfidentialitySerializer,
-    DocumentSerializer,
-    DocumentTypeSerializer,
-    StatusSerializer,
-)
+from document_manager.api.filters import DocumentFilter
+from document_manager.api.serializers.document import DocumentSerializer
+from document_manager.api.viewsets.custom_mixins import ListCreateViewset
+from document_manager.models import Document
 
 
-class DocumentTypeViewSet(viewsets.ModelViewSet):
-    queryset = DocumentType.objects.all()
-    serializer_class = DocumentTypeSerializer
-    permisiion_class = [
-        IsAuthenticated,
-    ]
-
-
-class StatusViewSet(viewsets.ModelViewSet):
-    queryset = Status.objects.all()
-    serializer_class = StatusSerializer
-    permisiion_class = [
-        IsAuthenticated,
-    ]
-
-
-class ConfidentialityViewSet(viewsets.ModelViewSet):
-    queryset = Confidentiality.objects.all()
-    serializer_class = ConfidentialitySerializer
-    permisiion_class = [
-        IsAuthenticated,
-    ]
-
-
-class DocumentListCreateView(generics.ListCreateAPIView):
-    queryset = Document.objects.all()
+class DocumentListCreateView(ListCreateViewset):
+    queryset = Document.objects.select_related("document_type", "label", "confidentiality", "status").all()
     serializer_class = DocumentSerializer
-    permission_class = [
-        IsAuthenticated,
-    ]
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = DocumentFilter
+    pagination_class = PageNumberPagination

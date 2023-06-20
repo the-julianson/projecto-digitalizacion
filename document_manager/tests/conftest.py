@@ -27,7 +27,7 @@ def user(db):
     return user
 
 
-@pytest.fixture()
+@pytest.fixture
 def token_factory() -> Callable[[AbstractUser], str]:
     def _token_factory(user: AbstractUser) -> str:
         refresh = RefreshToken.for_user(user)
@@ -36,7 +36,7 @@ def token_factory() -> Callable[[AbstractUser], str]:
     return _token_factory
 
 
-@pytest.fixtureimmediate
+@pytest.fixture
 def token_str(user):
     refresh = RefreshToken.for_user(user)
     return str(refresh.access_token)
@@ -48,11 +48,26 @@ def authenticated_api_client(api_client, token_str):
     return api_client
 
 
-@pytest.fixture()
+@pytest.fixture
 def load_internal_areas():
     call_command("loaddata", "internal_areas.json")
     areas_ids = InternalArea.objects.all().values_list("id", flat=True)
     return areas_ids
+
+
+@pytest.fixture
+def load_confidentiality():
+    call_command("loaddata", "confidentiality.json")
+
+
+@pytest.fixture
+def load_document_type():
+    call_command("loaddata", "document_type.json")
+
+
+@pytest.fixture
+def load_status():
+    call_command("loaddata", "status.json")
 
 
 @pytest.fixture()
@@ -77,15 +92,7 @@ def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
     return _etiqueta_factory
 
 
-@pytest.fixture()
-def confidentiality_factory():
-    def _confidentiality_factory() -> Confidentiality:
-        return Confidentiality.objects.create(level="Test")
-
-    return _confidentiality_factory
-
-
-@pytest.fixture()
+@pytest.fixture
 def status_factory():
     def _status_factory() -> Status:
         return Status.objects.create(status_name="Test")
@@ -93,9 +100,15 @@ def status_factory():
     return _status_factory
 
 
-@pytest.fixture()
-def document_type_factory():
-    def _document_type_factory() -> DocumentType:
-        return DocumentType.objects.create(type="Test")
+@pytest.fixture
+def kwargs_for_document_factory(user, load_internal_areas, load_document_type, load_confidentiality, load_status):
+    confidentiality = Confidentiality.objects.first()
+    document_type = DocumentType.objects.first()
+    document_status = Status.objects.first()
 
-    return _document_type_factory
+    _kwargs = {
+        "document_type": document_type,
+        "confidentiality": confidentiality,
+        "status": document_status,
+    }
+    return _kwargs

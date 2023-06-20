@@ -8,35 +8,6 @@ from document_manager.models import (
     Status,
 )
 
-from .label import LabelSerializer
-
-
-class DocumentTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocumentType
-        fields = "__all__"
-        read_only_fields = [
-            "id",
-        ]
-
-
-class ConfidentialitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Confidentiality
-        fields = "__all__"
-        read_only_fields = [
-            "id",
-        ]
-
-
-class StatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Status
-        fields = "__all__"
-        read_only_fields = [
-            "id",
-        ]
-
 
 class DocumentSerializer(serializers.ModelSerializer):
     document_type = serializers.SlugRelatedField(many=False, slug_field="type", queryset=DocumentType.objects.all())
@@ -48,7 +19,19 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = "__all__"
+        fields = [
+            "id",
+            "internal_id",
+            "file_id",
+            "label",
+            "blockchain_token",
+            "document_description",
+            "file_description",
+            "document_type",
+            "confidentiality",
+            "status",
+            "is_active",
+        ]
         read_only_fields = [
             "id",
         ]
