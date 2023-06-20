@@ -1,6 +1,16 @@
 from django.contrib import admin
 
-from document_manager.models import InternalArea, Label
+from document_manager.models import (
+    Building,
+    Confidentiality,
+    Document,
+    DocumentLocation,
+    DocumentType,
+    InternalArea,
+    Label,
+    Level,
+    Status,
+)
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -14,4 +24,39 @@ admin.site.register(Label, LabelAdmin)
 
 @admin.register(InternalArea)
 class InternalAreaAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DocumentLocation)
+class DocumentLocationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DocumentType)
+class DocumentTypeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Confidentiality)
+class ConfidentialityAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Building)
+class BuildingAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Level)
+class LevelAdmin(admin.ModelAdmin):
     pass

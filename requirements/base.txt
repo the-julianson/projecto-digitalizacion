@@ -6,9 +6,11 @@ distlib==0.3.6
 Django==4.2
 django-cors-headers==3.10.0
 django-extensions==3.2.1
+django-filter==23.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.26.2
+factory-boy==3.2.1
 filelock==3.12.0
 flake8==6.0.0
 identify==2.5.22
