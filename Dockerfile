@@ -30,5 +30,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 # copy project
 COPY . .
 
+# collect static files
+RUN python manage.py collectstatic --no-input
+
 # run entrypoint
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
