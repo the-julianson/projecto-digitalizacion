@@ -1,0 +1,16 @@
+[
+ {
+  "model": "document_manager.confidentiality",
+  "pk": 1,
+  "fields": {
+   "level": "basico"
+  }
+ },
+ {
+  "model": "document_manager.confidentiality",
+  "pk": 2,
+  "fields": {
+   "level": "intermedio"
+  }
+ }
+]

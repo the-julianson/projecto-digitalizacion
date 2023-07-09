@@ -16,3 +16,8 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def group(self):
+        groups = self.groups.all()
+        return [group.name for group in groups if groups]

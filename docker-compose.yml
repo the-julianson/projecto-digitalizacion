@@ -7,29 +7,26 @@ services:
   server:
     build:
       context: .
-    command: python manage.py runserver 0.0.0.0:8000
-    container_name: server
+    command: hupper -m manage runserver 0.0.0.0:8000
     depends_on:
       - database
-    environment:
-      - PGDATABASE=nebula-docs # new
-      - PGUSER=user # new
-      - PGPASSWORD=password # new
-      - PGHOST=server-database # new
+    volumes:
+      - .:/usr/src/app/
     ports:
-      - 8003:8000
+      - "8003:8000"
+
 
   database:
-    container_name: taxi-database
     image: postgres:15-alpine
     environment:
       - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-    expose:
-      - 5432
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=nebula_dev
     volumes:
-      - server-database:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
 
 # new
 volumes:
-  server-database:
+  postgres_data:
