@@ -10,6 +10,7 @@ from document_manager.models import (
     Label,
     Level,
     Status,
+    Batch
 )
 
 
@@ -58,5 +59,9 @@ class BuildingAdmin(admin.ModelAdmin):
 
 
 @admin.register(Level)
+class LevelAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Batch)
 class LevelAdmin(admin.ModelAdmin):
     pass
