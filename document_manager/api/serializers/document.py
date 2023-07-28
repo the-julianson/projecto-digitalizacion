@@ -5,7 +5,7 @@ from document_manager.models import (
     Document,
     DocumentType,
     Label,
-    Status,
+    DocumentStatus,
 )
 
 
@@ -14,7 +14,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     confidentiality = serializers.SlugRelatedField(
         many=False, slug_field="level", queryset=Confidentiality.objects.all()
     )
-    status = serializers.SlugRelatedField(many=False, slug_field="status_name", queryset=Status.objects.all())
+    status = serializers.SlugRelatedField(many=False, slug_field="status_name", queryset=DocumentStatus.objects.all())
     label = serializers.SlugRelatedField(many=False, slug_field="code", queryset=Label.objects.all())
 
     class Meta:

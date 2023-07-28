@@ -19,14 +19,29 @@ class DocumentListCreateView(ListCreateViewset):
     filterset_class = DocumentFilter
     pagination_class = PageNumberPagination
 
-    @action(detail=False, methods=['get'], url_path='documents-by-batch-id')
+    @action(detail=False, methods=['get'], url_path='get-documents-last-batch')
     def documents_by_batch_id(self, request):
         """
         Custom action to retrieve documents associated with all batches where the status is 'open'.
         """
         try:
             # Get all batches with status 'open'
-            open_batches = Batch.objects.filter(status__status_name='open')
+            open_batches = Batch.objects.filter(status__batch_status_name='abierto')
+            # Get all documents associated with open batches
+            documents = Document.objects.filter(batch__in=open_batches)
+            serializer = DocumentSerializer(documents, many=True)
+            return Response(serializer.data)
+        except Batch.DoesNotExist:
+            return Response({"error": "No open batches found"}, status=404)
+
+    @action(detail=False, methods=['put'], url_path='manage-status')
+    def documents_by_batch_id(self, request):
+        """
+        Custom action to retrieve documents associated with all batches where the status is 'open'.
+        """
+        try:
+            # Get all batches with status 'open'
+            open_batches = Batch.objects.filter(status__batch_status_name='abierto')
             # Get all documents associated with open batches
             documents = Document.objects.filter(batch__in=open_batches)
             serializer = DocumentSerializer(documents, many=True)
