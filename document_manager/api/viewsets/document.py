@@ -2,6 +2,7 @@ from django_filters import rest_framework as filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+import json
 
 from document_manager.api.filters import DocumentFilter
 from document_manager.api.serializers.document import DocumentSerializer
@@ -48,7 +49,18 @@ class DocumentListCreateView(ListCreateViewset):
         """
         try:
             document = self.get_object()
-            new_status = request.data.get('status')  # Get the new status from the request data
+            new_status = None
+
+            # Try to get the new status from the request data as JSON
+            try:
+                new_status = json.loads(request.body).get('status')
+            except json.JSONDecodeError:
+                pass
+
+
+            # If the new_status is not found as JSON data, try to get it from form data
+            if new_status is None:
+                new_status = request.data.get('status')
 
             # Check if the new_status is valid
             valid_statuses = ["inicializado", "en progreso", "escaneado"]
