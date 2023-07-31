@@ -21,11 +21,6 @@ class DocumentListCreateView(ListCreateViewset):
     filterset_class = DocumentFilter
     pagination_class = PageNumberPagination
 
-    STATUS_MAPPING = {
-        "inicializado": "inicializado",
-        "en progreso": "InProgress",
-        "escaneado": "Scanned"
-    }
 
     @action(detail=False, methods=['get'], url_path='get-documents-last-batch')
     def documents_by_batch_id(self, request):
@@ -55,7 +50,7 @@ class DocumentListCreateView(ListCreateViewset):
             try:
                 new_status = json.loads(request.body).get('status')
             except json.JSONDecodeError:
-                pass
+                return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
 
 
             # If the new_status is not found as JSON data, try to get it from form data
