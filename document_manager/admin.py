@@ -9,7 +9,9 @@ from document_manager.models import (
     InternalArea,
     Label,
     Level,
-    Status,
+    DocumentStatus,
+    Batch,
+    BatchStatus
 )
 
 
@@ -47,7 +49,7 @@ class ConfidentialityAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Status)
+@admin.register(DocumentStatus)
 class StatusAdmin(admin.ModelAdmin):
     pass
 
@@ -58,5 +60,13 @@ class BuildingAdmin(admin.ModelAdmin):
 
 
 @admin.register(Level)
+class LevelAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Batch)
+class LevelAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(BatchStatus)
 class LevelAdmin(admin.ModelAdmin):
     pass
