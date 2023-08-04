@@ -5,6 +5,7 @@ from rest_framework import status
 import json
 
 from document_manager.api.filters import DocumentFilter
+from document_manager.utilities import json_loads  # Import the utility function
 from document_manager.api.serializers.document import DocumentSerializer
 from document_manager.api.viewsets.custom_mixins import ListCreateViewset
 from document_manager.models import Document, Batch, DocumentStatus
@@ -49,13 +50,8 @@ class DocumentListCreateView(ListCreateViewset):
 
         # Metrelo en una función 
 
-        # utilities.json_loads(request) 
-        try:
-            new_status = json.loads(request.body).get('status')
-        except json.JSONDecodeError:
-            return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # If the new_status is not found as JSON data, try to get it from form data
+        new_status = json_loads(request) 
+        
         if new_status is None:
             new_status = request.data.get('status')
 

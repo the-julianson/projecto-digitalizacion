@@ -69,8 +69,11 @@ def merge_pdfs(data):
         pdf_merger.append(etiqueta.code)
     return pdf_merger
 
-def json_loads(request): 
+def json_loads(request):
     try:
         new_status = json.loads(request.body).get('status')
     except json.JSONDecodeError:
         return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return new_status
+    
