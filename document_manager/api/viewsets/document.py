@@ -12,7 +12,6 @@ from document_manager.models import Document, Batch, DocumentStatus
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-
 class DocumentListCreateView(ListCreateViewset):
     queryset = Document.objects.select_related("document_type", "label", "confidentiality", "status").all()
     serializer_class = DocumentSerializer
@@ -29,7 +28,7 @@ class DocumentListCreateView(ListCreateViewset):
         """
         try:
             # Get all batches with status 'open'
-            open_batches = Batch.objects.filter(status__batch_status_name='abierto')
+            open_batches = Batch.objects.filter(status__name='abierto')
             # Get all documents associated with open batches
             documents = Document.objects.filter(batch__in=open_batches)
             serializer = DocumentSerializer(documents, many=True)
@@ -45,31 +44,33 @@ class DocumentListCreateView(ListCreateViewset):
         try:
             document = self.get_object()
             new_status = None
-
-            # Try to get the new status from the request data as JSON
-            try:
-                new_status = json.loads(request.body).get('status')
-            except json.JSONDecodeError:
-                return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-            # If the new_status is not found as JSON data, try to get it from form data
-            if new_status is None:
-                new_status = request.data.get('status')
-
-            # Check if the new_status is valid
-            valid_statuses = ["inicializado", "en progreso", "escaneado"]
-            if new_status not in valid_statuses:
-                return Response({"error": "Invalid status provided"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Update the 'status' field and save the document
-            document.status = DocumentStatus.objects.get(status_name=new_status)
-            document.save()
-
-            # Serialize and return the updated document
-            serializer = DocumentSerializer(document)
-            return Response(serializer.data)
         except Document.DoesNotExist:
             return Response({"error": "Document not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Metrelo en una función 
+
+        # utilities.json_loads(request) 
+        try:
+            new_status = json.loads(request.body).get('status')
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # If the new_status is not found as JSON data, try to get it from form data
+        if new_status is None:
+            new_status = request.data.get('status')
+
+        # Check if the new_status is valid
+        valid_statuses = DocumentStatus.objects.values_list ("name", flat=True)
+        if new_status not in valid_statuses:
+            return Response({"error": "Invalid status provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the 'status' field and save the document
+        document.status = DocumentStatus.objects.get(name=new_status)
+        document.save()
+
+        # Serialize and return the updated document
+        serializer = DocumentSerializer(document)
+        return Response(serializer.data)
+        
 
     

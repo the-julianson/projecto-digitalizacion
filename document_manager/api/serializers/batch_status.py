@@ -5,5 +5,4 @@ from document_manager.models import BatchStatus
 class BatchStatusSerializer(serializers.ModelSerializer): 
       class Meta:
         model = BatchStatus
-        fields = "__all__"
-      
+        fields = ["name"]

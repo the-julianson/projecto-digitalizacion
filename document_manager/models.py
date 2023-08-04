@@ -11,16 +11,16 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 class DocumentStatus(models.Model):
-    status_name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.status_name
+        return self.name
 
 class BatchStatus(models.Model):
-    batch_status_name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.batch_status_name
+        return self.name
 
 
 class DocumentType(models.Model):
@@ -110,7 +110,7 @@ class Batch(models.Model):
     # Cada vez que se procesa un documento, se agrega uno nuevo 
 
     # Hacer un bacthstatus 
-    status = models.ForeignKey(BatchStatus, on_delete=models.CASCADE)
+    status = models.ForeignKey(BatchStatus, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.number}"
@@ -125,8 +125,8 @@ class Batch(models.Model):
             else:
                 self.number = 1
         
-        open_batches = Batch.objects.filter(status__batch_status_name='abierto')
-        if self.status.batch_status_name == 'abierto' and open_batches.exists():
+        open_batches = Batch.objects.filter(status__name='abierto')
+        if self.status.name == 'abierto' and open_batches.exists():
             raise ValidationError("Only one batch with 'open' status is allowed.")
             
         return super().save(*args, **kwargs)        
@@ -142,7 +142,7 @@ class Document(models.Model):
     file_description = models.CharField(max_length=1000, null=True, blank=True)
     document_type = models.ForeignKey(DocumentType, on_delete=models.CASCADE)
     confidentiality = models.ForeignKey(Confidentiality, on_delete=models.CASCADE)
-    status = models.ForeignKey(DocumentStatus, on_delete=models.CASCADE)
+    status = models.ForeignKey(DocumentStatus, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -173,5 +173,3 @@ class DocumentLocation(models.Model):
 
     def __str__(self):
         return f"{self.building} - {self.level}"
-
-

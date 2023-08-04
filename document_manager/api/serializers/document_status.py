@@ -5,5 +5,4 @@ from document_manager.models import DocumentStatus
 class DocumentStatusSerializer(serializers.ModelSerializer): 
       class Meta:
         model = DocumentStatus
-        fields = "__all__"
-      
+        fields = ["name"]
