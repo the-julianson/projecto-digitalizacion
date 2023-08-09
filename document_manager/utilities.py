@@ -1,11 +1,11 @@
+import json
 from io import BytesIO
 
 from django.db.models.fields.files import ImageFieldFile
 from PIL import Image
 from pypdf import PdfMerger
-import json
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
 
 
 def merge_images(etiqueta_ids_str_paths: list[str | ImageFieldFile]) -> Image:
@@ -69,11 +69,13 @@ def merge_pdfs(data):
         pdf_merger.append(etiqueta.code)
     return pdf_merger
 
+
 def json_loads(request):
     try:
         new_status = json.loads(request.body).get('status')
     except json.JSONDecodeError:
-        return Response({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(
+            {"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
     return new_status
-    

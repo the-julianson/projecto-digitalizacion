@@ -231,11 +231,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "out_date",
-                    models.DateField(help_text="Fecha en la que se retira el documento", null=True),
+                    models.DateField(
+                        help_text="Fecha en la que se retira el documento", null=True
+                    ),
                 ),
                 (
                     "box_id",
-                    models.IntegerField(help_text="ID caja que contiene el documento", null=True),
+                    models.IntegerField(
+                        help_text="ID caja que contiene el documento", null=True
+                    ),
                 ),
                 (
                     "building",
@@ -264,7 +268,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="document",
             name="label",
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to="document_manager.label"),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, to="document_manager.label"
+            ),
         ),
         migrations.AddField(
             model_name="document",

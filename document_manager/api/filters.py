@@ -11,8 +11,12 @@ class DocumentFilter(filters.FilterSet):
     - `confidentiality` (str): The document number.
     """
 
-    document_type = filters.CharFilter(field_name="document_type__type", lookup_expr="icontains")
-    confidentiality = filters.CharFilter(field_name="confidentiality__level", lookup_expr="icontains")
+    document_type = filters.CharFilter(
+        field_name="document_type__type", lookup_expr="icontains"
+    )
+    confidentiality = filters.CharFilter(
+        field_name="confidentiality__level", lookup_expr="icontains"
+    )
 
     class Meta:
         model = Document
