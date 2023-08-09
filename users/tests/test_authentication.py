@@ -17,7 +17,9 @@ PASSWORD = "pAsswOrd"
         ("b@b.com", "", "", "password", "password"),
     ],
 )
-def test_user_can_sign_up(group_factory, api_client, email, first_name, last_name, password_1, password_2):
+def test_user_can_sign_up(
+    group_factory, api_client, email, first_name, last_name, password_1, password_2
+):
     url = reverse("sign_up")
     group_operator = group_factory(name="operator")
     data = {

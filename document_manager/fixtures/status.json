@@ -1,16 +1,16 @@
 [
  {
-  "model": "document_manager.status",
+  "model": "document_manager.documentstatus",
   "pk": 1,
   "fields": {
-   "status_name": "procesado"
+   "name": "procesado"
   }
  },
  {
-  "model": "document_manager.status",
+  "model": "document_manager.documentstatus",
   "pk": 2,
   "fields": {
-   "status_name": "pendiente"
+   "name": "pendiente"
   }
  }
 ]

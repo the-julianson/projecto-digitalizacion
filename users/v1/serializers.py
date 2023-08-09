@@ -17,11 +17,17 @@ class UserSerializer(serializers.ModelSerializer):
         existing_group_names = set(Group.objects.values_list("name", flat=True))
 
         if not group_names.issubset(existing_group_names):
-            raise serializers.ValidationError("One or more provided group names do not exist.")
+            raise serializers.ValidationError(
+                "One or more provided group names do not exist."
+            )
         return data
 
     def create(self, validated_data):
-        data = {key: value for key, value in validated_data.items() if key not in ("password_1", "password_2")}
+        data = {
+            key: value
+            for key, value in validated_data.items()
+            if key not in ("password_1", "password_2")
+        }
         group_names = data.pop("group", [])
         groups = Group.objects.filter(name__in=group_names).values_list("id", flat=True)
         data["password"] = validated_data["password_1"]
@@ -33,7 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "password_1", "password_2", "first_name", "last_name", "group")
+        fields = (
+            "id",
+            "email",
+            "password_1",
+            "password_2",
+            "first_name",
+            "last_name",
+            "group",
+        )
         read_only_fields = ("id",)
 
 

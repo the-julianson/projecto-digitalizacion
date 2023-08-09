@@ -38,14 +38,18 @@ class LabelViewSet(viewsets.ModelViewSet):
         validate_request_data(request.data)
         labels = []
         for _ in range(labels_quantity):
-            label = Label(area_id=area_id, user=user)
+            label = Label(user=user)
             label.save()
             labels.append(label)
 
         serializer = self.get_serializer(labels, many=True)
 
-        etiqueta_ids_str = ",".join([str(etiqueta["id"]) for etiqueta in serializer.data])
-        merged_pdf_url = reverse("label-merge-pdfs") + f"?etiqueta_ids={etiqueta_ids_str}"
+        etiqueta_ids_str = ",".join(
+            [str(etiqueta["id"]) for etiqueta in serializer.data]
+        )
+        merged_pdf_url = (
+            reverse("label-merge-pdfs") + f"?etiqueta_ids={etiqueta_ids_str}"
+        )
 
         return Response(
             {
@@ -72,15 +76,17 @@ class LabelViewSet(viewsets.ModelViewSet):
         """
         etiqueta_ids_str = request.GET.get("etiqueta_ids")
         etiqueta_ids_list = list(map(int, etiqueta_ids_str.split(",")))
-        etiquetas_path_to_code_str = Label.objects.filter(id__in=etiqueta_ids_list).values_list(
-            "bar_code_image", flat=True
-        )
+        etiquetas_path_to_code_str = Label.objects.filter(
+            id__in=etiqueta_ids_list
+        ).values_list("bar_code_image", flat=True)
         merged_image = merge_images(etiquetas_path_to_code_str)
 
         pdf_bytes = get_image_response(merged_image)
         etiquetas_ids_snake_case = etiqueta_ids_str.replace(",", "_")
         _file_name = f"etiquetas_{etiquetas_ids_snake_case}.png"
-        response = FileResponse(pdf_bytes, as_attachment=True, filename=_file_name, content_type="image/png")
+        response = FileResponse(
+            pdf_bytes, as_attachment=True, filename=_file_name, content_type="image/png"
+        )
         response.headers["Content-Disposition"] = f"attachment; filename={_file_name}"
         return response
 

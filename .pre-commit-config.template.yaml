@@ -19,5 +19,5 @@ repos:
   hooks:
   - id: black
     name: black
-    args: [--check, --diff, --line-length=120, --skip-string-normalization]
+    args: [--check, --diff, --skip-string-normalization]
     exclude: migrations/.*

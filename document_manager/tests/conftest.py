@@ -9,10 +9,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from document_manager.models import (
     Confidentiality,
+    DocumentStatus,
     DocumentType,
     InternalArea,
     Label,
-    Status,
 )
 
 
@@ -23,7 +23,9 @@ def api_client():
 
 @pytest.fixture
 def user(db):
-    user = get_user_model().objects.create_user(email="testuser@mail.com", password="testpass")
+    user = get_user_model().objects.create_user(
+        email="testuser@mail.com", password="testpass"
+    )
     return user
 
 
@@ -70,8 +72,13 @@ def load_status():
     call_command("loaddata", "status.json")
 
 
+@pytest.fixture
+def load_batch_status():
+    call_command("loaddata", "batch_status.json")
+
+
 @pytest.fixture()
-def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
+def etiqueta_factory() -> Callable[[AbstractUser], Label]:
     """
     Factory fixture for creating Label instances.
 
@@ -86,25 +93,27 @@ def etiqueta_factory() -> Callable[[int, AbstractUser], Label]:
         A function that takes an area_id and a user and returns an Label instance.
     """
 
-    def _etiqueta_factory(area: [int, InternalArea], user: AbstractUser) -> Label:
-        return Label.objects.create(area=area, user=user)
+    def _etiqueta_factory(user: AbstractUser) -> Label:
+        return Label.objects.create(user=user)
 
     return _etiqueta_factory
 
 
 @pytest.fixture
 def status_factory():
-    def _status_factory() -> Status:
-        return Status.objects.create(status_name="Test")
+    def _status_factory() -> DocumentStatus:
+        return DocumentStatus.objects.create(status_name="Test")
 
     return _status_factory
 
 
 @pytest.fixture
-def kwargs_for_document_factory(user, load_internal_areas, load_document_type, load_confidentiality, load_status):
+def kwargs_for_document_factory(
+    user, load_internal_areas, load_document_type, load_confidentiality, load_status
+):
     confidentiality = Confidentiality.objects.first()
     document_type = DocumentType.objects.first()
-    document_status = Status.objects.first()
+    document_status = DocumentStatus.objects.first()
 
     _kwargs = {
         "document_type": document_type,

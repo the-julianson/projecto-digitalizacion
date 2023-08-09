@@ -34,12 +34,16 @@ def test_create_bulk_etiqueta(api_client, token_str, load_internal_areas):
 
     assert response.data["merged_pdf_url"] is not None
 
-    merged_pdf_url_substring = reverse("label-merge-pdfs") + f"?etiqueta_ids={','.join(map(str, list_of_ids))}"
+    merged_pdf_url_substring = (
+        reverse("label-merge-pdfs") + f"?etiqueta_ids={','.join(map(str, list_of_ids))}"
+    )
     assert merged_pdf_url_substring in response.data["merged_pdf_url"]
 
 
 @pytest.mark.django_db
-def test_create_bulk_etiqueta_unauthenticated(api_client, token_str, load_internal_areas):
+def test_create_bulk_etiqueta_unauthenticated(
+    api_client, token_str, load_internal_areas
+):
     area_id = InternalArea.objects.filter(id=2).first().id
     url = reverse("label-create-bulk")
     data = {
@@ -51,7 +55,9 @@ def test_create_bulk_etiqueta_unauthenticated(api_client, token_str, load_intern
 
 
 @pytest.mark.django_db
-def test_create_bulk_etiqueta_bad_data(authenticated_api_client, token_str, load_internal_areas):
+def test_create_bulk_etiqueta_bad_data(
+    authenticated_api_client, token_str, load_internal_areas
+):
     # Invalid area_id
     url = reverse("label-create-bulk")
 
@@ -77,7 +83,9 @@ def test_create_bulk_etiqueta_bad_data(authenticated_api_client, token_str, load
 
 
 @pytest.mark.django_db
-def test_merged_pdf_url(api_client, user, token_factory, load_internal_areas, etiqueta_factory):
+def test_merged_pdf_url(
+    api_client, user, token_factory, load_internal_areas, etiqueta_factory
+):
     area = InternalArea.objects.first()
     url = reverse("label-merge-pdfs")
     token_str = token_factory(user)
@@ -86,7 +94,7 @@ def test_merged_pdf_url(api_client, user, token_factory, load_internal_areas, et
 
     etiquetas_id = []
     for _ in range(numero_etiquetas):
-        etiqueta = etiqueta_factory(area, user)
+        etiqueta = etiqueta_factory(user)
         etiquetas_id.append(etiqueta.id)
 
     etiquetas_id_str = ",".join(map(str, etiquetas_id))
@@ -95,7 +103,10 @@ def test_merged_pdf_url(api_client, user, token_factory, load_internal_areas, et
     response = api_client.get(url, HTTP_AUTHORIZATION=f"Bearer {token_str}")
     etiquetas_ids_snake_case = etiquetas_id_str.replace(",", "_")
     assert response.status_code == status.HTTP_200_OK
-    assert response["Content-Disposition"] == f"attachment; filename=etiquetas_{etiquetas_ids_snake_case}.png"
+    assert (
+        response["Content-Disposition"]
+        == f"attachment; filename=etiquetas_{etiquetas_ids_snake_case}.png"
+    )
 
 
 @pytest.mark.django_db
@@ -104,7 +115,7 @@ def test_merge_images(etiqueta_factory, user, load_internal_areas):
     etiqueta_path_strings = []
     etiquetas = []
     for _ in range(3):
-        etiqueta = etiqueta_factory(internal_area, user)
+        etiqueta = etiqueta_factory(user)
         etiqueta_path_strings.append(etiqueta.bar_code_image)
         etiquetas.append(etiqueta)
 
