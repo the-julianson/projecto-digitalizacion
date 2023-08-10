@@ -20,8 +20,8 @@ services:
     image: postgres:15-alpine
     environment:
       - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=user
-      - POSTGRES_DB=nebula_dev
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=nebula-docs
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

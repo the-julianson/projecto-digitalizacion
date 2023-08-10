@@ -9,7 +9,11 @@ from document_manager.api.serializers.label import LabelSerializer
 from document_manager.api.validators import validate_request_data
 from document_manager.api.viewsets.custom_mixins import ListViewSet
 from document_manager.models import InternalArea, Label
-from document_manager.utilities import get_image_response, merge_images
+from document_manager.utilities import (
+    base_64_images_builder,
+    get_image_response,
+    merge_images,
+)
 
 
 class LabelViewSet(viewsets.ModelViewSet):
@@ -89,6 +93,16 @@ class LabelViewSet(viewsets.ModelViewSet):
         )
         response.headers["Content-Disposition"] = f"attachment; filename={_file_name}"
         return response
+
+    @action(detail=False, methods=["get"], url_path="create-base64-labels")
+    def create_base64_labels(self, request, *args, **kwargs) -> Response:
+        etiqueta_ids_str = request.GET.get("labels_ids")
+        etiqueta_ids_list = list(map(int, etiqueta_ids_str.split(",")))
+        etiquetas_path_to_code_str = Label.objects.filter(
+            id__in=etiqueta_ids_list
+        ).values_list("id", "bar_code_image")
+        base_64_labels = base_64_images_builder(etiquetas_path_to_code_str)
+        return Response(base_64_labels, status=status.HTTP_200_OK)
 
 
 class InternalAreaSerializer(serializers.ModelSerializer):

@@ -218,7 +218,7 @@ class Document(models.Model):
         null=True,
         blank=True,
         help_text="Numero de Expediente",
-    )  #
+    )
     label = models.OneToOneField(
         Label, models.PROTECT, null=True, blank=True, help_text="Etiqueta"
     )
@@ -244,7 +244,11 @@ class Document(models.Model):
     )
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, help_text="ID de Lote")
     status = models.ForeignKey(
-        DocumentStatus, on_delete=models.PROTECT, help_text="Estado del Documento"
+        DocumentStatus,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        help_text="Estado del Documento",
     )
     # A document can be in only one location at a time
     box = models.ForeignKey(

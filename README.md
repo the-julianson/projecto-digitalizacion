@@ -36,3 +36,36 @@ con docker-compose se puede tener un entorno muy similiar al de producción de m
       cp .pre-commit-config.template.yaml .pre-commit-config.yaml && pre-commit install
 
    ```
+
+* copiar .env.template a .env
+
+
+   ``` bash
+      # Copiar el config file e instalarlo
+      cp .env.template .env
+
+   ```
+
+* correr el proyecto usando docker-compose
+
+
+   ``` bash
+      docker-compose up -d --build
+
+   ```
+
+* correr todos los tests
+
+
+   ``` bash
+      docker-compose exec server pytest
+   ```
+
+* correr un test especifico
+
+
+   ``` bash
+      # -vv es con la opcion verboso
+      # ::test_document_creation_with_labels >> testea unicamente esta funcion
+      docker-compose exec server pytest document_manager/tests/test_documents.py::test_document_creation_with_labels -vv
+   ```
