@@ -9,7 +9,6 @@ from document_manager.models import (
     Confidentiality,
     DocumentStatus,
     DocumentType,
-    InternalArea,
     Label,
 )
 
@@ -26,7 +25,6 @@ def test_document_create_list(
     load_status,
     load_batch_status,
 ):
-    area = InternalArea.objects.first()
     confidentiality = Confidentiality.objects.first()
     document_type = DocumentType.objects.first()
     document_status = DocumentStatus.objects.first()
@@ -149,3 +147,33 @@ def test_document_filtering(
     assert isinstance(results, list)
     assert len(results) == 1
     assert results[0]["document_type"] == document_type1.type
+
+
+@pytest.mark.django_db
+def test_document_creation_with_labels(
+    kwargs_for_document_factory,
+    api_client,
+    token_str,
+    user,
+    load_batch_status,
+):
+    data = {
+        "internal_id": "Test123",
+        "document_description": "A description",
+        "labels_quantity": 2,
+    }
+    url = reverse("document-create-document-and-labels")
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token_str}")
+    response = api_client.post(url, data=data, format="json")
+    assert response.status_code == status.HTTP_201_CREATED
+    assert isinstance(response.data, dict)
+    labels_url = response.data.get("base64_labels_url", None)
+    assert labels_url is not None
+    labels_response = api_client.get(labels_url, format="json")
+    assert labels_response.status_code == status.HTTP_200_OK
+    data = labels_response.data
+    assert isinstance(data, dict)
+    assert len(data.items()) == 2
+    first_key = next(iter(data))
+    assert isinstance(data.get(first_key), dict)
+    assert isinstance(data.get(first_key).get("b64_image"), bytes)

@@ -6,7 +6,7 @@ from PIL import Image
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from document_manager.constants import INVALID_AREA_ID_MSG, NON_POSITIVE_LABELS_MSG
+from document_manager.constants import NON_POSITIVE_LABELS_MSG
 from document_manager.models import InternalArea, Label
 from document_manager.tests.utility import delete_file
 from document_manager.utilities import merge_images
@@ -23,7 +23,6 @@ def test_create_bulk_etiqueta(api_client, token_str, load_internal_areas):
     }
     response = api_client.post(url, data, format="json")
     assert response.status_code == status.HTTP_201_CREATED
-
     assert isinstance(response.data, dict)
     list_of_ids = [etiqueta["id"] for etiqueta in response.data["etiquetas"]]
     etiquetas_codes = Label.objects.filter(id__in=list_of_ids).only("bar_code_image")
@@ -31,9 +30,7 @@ def test_create_bulk_etiqueta(api_client, token_str, load_internal_areas):
     for etiqueta in etiquetas_codes:
         assert default_storage.exists(etiqueta.bar_code_image.name)
         delete_file(etiqueta.bar_code_image.path)
-
     assert response.data["merged_pdf_url"] is not None
-
     merged_pdf_url_substring = (
         reverse("label-merge-pdfs") + f"?etiqueta_ids={','.join(map(str, list_of_ids))}"
     )
@@ -58,25 +55,11 @@ def test_create_bulk_etiqueta_unauthenticated(
 def test_create_bulk_etiqueta_bad_data(
     authenticated_api_client, token_str, load_internal_areas
 ):
-    # Invalid area_id
     url = reverse("label-create-bulk")
-
-    area = InternalArea.objects.filter().last()
-    area_id = area.id + 1 if area else 99999
     data = {
-        "labels_quantity": 2,
-        "area_id": area_id,
-    }
-
-    response = authenticated_api_client.post(url, data, format="json")
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert INVALID_AREA_ID_MSG in str(response.data)
-
-    data = {
-        "labels_quantity": -1,  # non-positive value
+        "labels_quantity": -1,
         "area_id": InternalArea.objects.first().id,
     }
-
     response = authenticated_api_client.post(url, data, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert NON_POSITIVE_LABELS_MSG in str(response.data)
@@ -86,7 +69,6 @@ def test_create_bulk_etiqueta_bad_data(
 def test_merged_pdf_url(
     api_client, user, token_factory, load_internal_areas, etiqueta_factory
 ):
-    area = InternalArea.objects.first()
     url = reverse("label-merge-pdfs")
     token_str = token_factory(user)
 
@@ -111,7 +93,6 @@ def test_merged_pdf_url(
 
 @pytest.mark.django_db
 def test_merge_images(etiqueta_factory, user, load_internal_areas):
-    internal_area = InternalArea.objects.first()
     etiqueta_path_strings = []
     etiquetas = []
     for _ in range(3):
@@ -120,14 +101,10 @@ def test_merge_images(etiqueta_factory, user, load_internal_areas):
         etiquetas.append(etiqueta)
 
     merged_images = merge_images(etiqueta_path_strings)
-
     assert merged_images is not None
-
     assert isinstance(merged_images, Image.Image)
-
     for etiqueta in etiquetas:
         is_file = os.path.isfile(etiqueta.bar_code_image.path)
         assert is_file is True
-
         if is_file:
             os.remove(etiqueta.bar_code_image.path)

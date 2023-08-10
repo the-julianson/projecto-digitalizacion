@@ -1,3 +1,4 @@
+import base64
 import json
 from io import BytesIO
 
@@ -42,6 +43,26 @@ def merge_images(etiqueta_ids_str_paths: list[str | ImageFieldFile]) -> Image:
         y_offset += image.height
 
     return new_image
+
+
+def base_64_images_builder(etiqueta_ids_str_paths) -> dict[dict[int, str]]:
+    """
+    Convert multiple images into a dict of base64 images.
+
+    Args:
+        etiqueta_ids_str_paths (list[str]): A list of paths to images.
+
+    Returns:
+        Image: A PIL Image object containing the merged image.
+    """
+    tupla = etiqueta_ids_str_paths
+    final_tupla = {}
+    for index, image in enumerate(tupla):
+        with open(f"media/{image[1]}", "rb") as img_file:
+            my_string = base64.b64encode(img_file.read())
+            final_tupla[image[0]] = dict(id=image[0], b64_image=my_string)
+
+    return final_tupla
 
 
 def get_image_response(image: Image) -> BytesIO:
