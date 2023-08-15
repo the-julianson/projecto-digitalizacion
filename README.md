@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+docker run -it -p 3000:80 --name nebula_container nebula_f 
 
 ## Available Scripts
 
