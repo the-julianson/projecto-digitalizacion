@@ -1,0 +1,6 @@
+{
+    "documento_id": 1,
+    "lote_id": 2,
+    "etiquetas_id": [1, 2, 3, 4, 5],
+    "imagen_etiquetas_url": "BASEURL?etiquetas_id=1,2,3,4,5"
+  }
