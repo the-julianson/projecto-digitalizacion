@@ -1,0 +1,16 @@
+[
+ {
+  "model": "document_manager.documenttype",
+  "pk": 1,
+  "fields": {
+   "type": "Compras"
+  }
+ },
+ {
+  "model": "document_manager.documenttype",
+  "pk": 2,
+  "fields": {
+   "type": "Ventas"
+  }
+ }
+]
