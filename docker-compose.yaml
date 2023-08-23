@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  web:
+    build: ./app
+    command: hupper -m manage runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=digitalizacion
+
+volumes:
+  postgres_data:
