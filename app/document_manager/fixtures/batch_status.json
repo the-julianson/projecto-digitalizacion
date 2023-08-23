@@ -1,0 +1,23 @@
+[
+  {
+    "model": "document_manager.batchstatus",
+    "pk": 1,
+    "fields": {
+      "name": "abierto"
+    }
+  },
+  {
+    "model": "document_manager.batchstatus",
+    "pk": 2,
+    "fields": {
+      "name": "cerrado"
+    }
+  },
+  {
+    "model": "document_manager.batchstatus",
+    "pk": 3,
+    "fields": {
+      "name": "en revision"
+    }
+  }
+]

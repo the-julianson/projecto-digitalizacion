@@ -1,0 +1,16 @@
+[
+ {
+  "model": "document_manager.internalarea",
+  "pk": 1,
+  "fields": {
+   "name": "Procuracion"
+  }
+ },
+ {
+  "model": "document_manager.internalarea",
+  "pk": 2,
+  "fields": {
+   "name": "Licitaciones"
+  }
+ }
+]

@@ -1,0 +1,32 @@
+# docker-compose.yml
+
+version: '3.7'
+
+services:
+
+  server:
+    build:
+      context: .
+    command: hupper -m manage runserver 0.0.0.0:8000
+    depends_on:
+      - database
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - "8003:8000"
+
+
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=nebula-docs
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+# new
+volumes:
+  postgres_data:
